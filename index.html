@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Xenohold</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<canvas id="gl"></canvas>
+
+<!-- ======================= HUD ======================= -->
+<div id="hud" class="hidden">
+  <div id="vignette"></div>
+  <div id="lowhp"></div>
+  <div id="dmgdirs"></div>
+  <div id="flash"></div>
+  <div id="scope" class="hidden"><div class="scope-ring"></div><div class="scope-h"></div><div class="scope-v"></div></div>
+  <canvas id="minimap" width="200" height="200"></canvas>
+  <div id="objective"></div>
+  <div id="subtitle"></div>
+  <div id="aatflash"></div>
+  <div id="xppops"></div>
+  <div id="crosshair"><i class="t"></i><i class="b"></i><i class="l"></i><i class="r"></i><b></b></div>
+  <div id="hitmarker"><i></i><i></i><i></i><i></i></div>
+  <div id="prompt"></div>
+  <div id="hint"></div>
+  <div id="notice"></div>
+  <div id="tipbox"><div class="tk">TIP</div><div class="tt"></div><div class="tx"></div></div>
+  <div id="banner"><div class="bt"></div><div class="bs"></div></div>
+  <div id="roundbig"><div class="rl">ROUND</div><div class="rn">1</div><div class="rs"></div></div>
+  <div id="boss" class="hidden"><div class="bn">HIVE TYRANT</div><div class="bb"><div class="bf"></div></div></div>
+  <div id="powerups"></div>
+  <div id="bl">
+    <div id="perks"></div>
+    <div id="shieldbar" class="hidden"><span>SHIELD</span><div><i id="shieldfill"></i></div></div>
+    <div id="parts" class="hidden"></div>
+    <div id="lives" title="Self-revives left"></div>
+    <div id="hpbar"><div id="hpfill"></div></div>
+    <div id="round">1</div>
+  </div>
+  <div id="br">
+    <div id="pts">500</div>
+    <div id="popups"></div>
+    <div id="wname">P-9 Sidearm</div>
+    <div id="ammo"><span id="mag">12</span><span id="res">/ 84</span></div>
+    <div id="nades"></div>
+    <div id="tactical" class="hidden"></div>
+  </div>
+  <div id="debuff"></div>
+  <div id="downed" class="hidden">LAZARUS PROTOCOL ENGAGED</div>
+  <div id="fps" class="hidden"></div>
+  <div id="heatBadge" class="hidden"></div>
+</div>
+
+<!-- ======================= MENUS ======================= -->
+<div id="menuShade" class="shade"></div>
+
+<section id="m-main" class="menu hidden">
+  <div class="logo">
+    <div class="logo-top">SURVIVE THE SWARM</div>
+    <h1>XENOHOLD</h1>
+    <div class="logo-sub">A round-based alien survival shooter</div>
+  </div>
+  <nav class="mainnav">
+    <button data-go="maps" class="primary">Deploy</button>
+    <button data-go="classes">Classes</button>
+    <button data-go="armory">Armory</button>
+    <button data-go="bestiary">Bestiary</button>
+    <button data-go="ach">Achievements</button>
+    <button data-go="editor">Map Editor</button>
+    <button data-go="settings">Settings</button>
+    <button data-go="controls">Field Manual</button>
+  </nav>
+  <div id="dailyCard"></div>
+  <div id="playercard"><img id="pcEmblem" alt=""><div class="pci"><div id="pcRank"></div><div id="pcLevel"></div><div class="pcbar"><i id="pcXP"></i></div><div id="pcXPtext"></div></div></div>
+  <div class="foot"><span id="bestline"></span><span class="ver" id="verline">v0.0.1.4</span></div>
+</section>
+
+<section id="m-maps" class="menu hidden">
+  <header><button class="back" data-go="main">‹ Back</button><h2>Select Arena</h2></header>
+  <div id="mapgrid"></div>
+  <div class="deploybar">
+    <div class="startround modepick"><span>Mode</span><div id="modes"></div><small id="modeDesc"></small></div>
+    <div class="startround"><span>Starting round</span><div id="rounds"></div></div>
+    <button id="classChip" class="modsbtn" data-go="classes"><span class="ml">Class</span><span id="classSummary">Assault</span><span class="cfg">Edit ›</span></button>
+    <button id="modsBtn" class="modsbtn"><span class="ml">Difficulty</span><span id="modsSummary">Veteran</span><span class="mh" id="modsHeat">HEAT 0</span><span class="cfg">Configure ›</span></button>
+    <button id="deployBtn" class="primary big">Deploy ›</button>
+  </div>
+</section>
+
+<section id="m-classes" class="menu hidden">
+  <header><button class="back" data-back>‹ Back</button><h2>Classes</h2><div id="clsSlotsInfo" class="hdrinfo"></div><button class="primary" data-go="loadout">Tailored Loadout ›</button></header>
+  <p class="armhint">Build up to three classes. Traits are permanent bonuses you unlock by completing challenges; trait slots open up as you rank up.</p>
+  <div class="clsgrid"><div id="clsList"></div><div id="clsEdit" class="panel"></div><div id="clsTraits" class="panel"></div></div>
+</section>
+
+<section id="m-loadout" class="menu hidden">
+  <header><button class="back" data-go="classes">‹ Classes</button><h2>Tailored Loadout</h2><div id="loSummary" class="hdrinfo"></div></header>
+  <p class="armhint">A sandbox build: turn on <b>Tailored Loadout</b> in Difficulty &amp; Mutators and you start every game with it (HEAT −8). Everything here is unlocked by playing: guns by kills with that gun, perks by buying them 20 times, the turret by 100 frag grenade kills.</p>
+  <div id="loTabs"></div>
+  <div id="loBody"></div>
+</section>
+
+<section id="m-ach" class="menu hidden">
+  <header><button class="back" data-go="main">‹ Back</button><h2>Achievements</h2><div id="achCount" class="hdrinfo"></div><button data-go="runs">Run History ›</button></header>
+  <div id="achBody"></div>
+</section>
+
+<section id="m-editor" class="menu hidden"></section>
+
+<section id="m-runs" class="menu hidden">
+  <header><button class="back" data-go="ach">‹ Achievements</button><h2>Run History</h2><div id="runsCount" class="hdrinfo"></div></header>
+  <div class="runbar"><button id="runsExport" class="primary">Save runs to a file</button><button id="runsCopy">Copy summary</button><button id="runsClear">Delete all</button><span id="runsMsg"></span></div>
+  <div id="runsBody"></div>
+</section>
+
+<section id="m-gunsmith" class="menu hidden">
+  <header><button class="back" data-go="armory">‹ Armory</button><h2 id="gsTitle">Gunsmith</h2></header>
+  <div class="gsgrid"><div class="panel gsleft"><img id="gsImg" alt=""><div id="gsRole"></div><div id="gsStats"></div></div><div id="gsSlots"></div></div>
+</section>
+
+<section id="m-mods" class="menu hidden">
+  <header><button class="back" data-go="maps">‹ Arena Select</button><h2>Difficulty &amp; Mutators</h2></header>
+  <div id="presets"></div>
+  <div class="modsgrid">
+    <div class="panel modsliders" id="modsliders"></div>
+    <div id="modtoggles"></div>
+  </div>
+  <div id="arenaopts" class="panel"></div>
+  <div class="deploybar">
+    <div id="heatbox"><div class="hl">HEAT</div><div class="hv" id="heatVal">0</div><div class="ht" id="heatTier">STANDARD</div><div class="hbar"><i id="heatBar"></i></div></div>
+    <button id="modsReset">Reset</button>
+    <button id="deployBtn2" class="primary big">Deploy ›</button>
+  </div>
+</section>
+
+<section id="m-armory" class="menu hidden">
+  <header><button class="back" data-go="main">‹ Back</button><h2>Armory</h2><div id="armoryRank"></div><button id="prestigeBtn" class="primary hidden">Enter Prestige ›</button></header>
+  <p class="armhint">Complete challenges with each weapon to unlock camos. Mutated weapons always wear the Forge's living camo.</p>
+  <div id="armorytabs"></div>
+  <div id="armorygrid"></div>
+</section>
+
+<section id="m-bestiary" class="menu hidden">
+  <header><button class="back" data-go="main">‹ Back</button><h2>Bestiary</h2></header>
+  <div class="bgrid">
+    <ul id="blist"></ul>
+    <div id="bstage"></div>
+    <div id="binfo">
+      <h3 id="bname"></h3>
+      <div id="bthreat"></div>
+      <p id="bdesc"></p>
+      <div id="bstats"></div>
+      <p id="btip"></p>
+      <div class="banims"><button data-anim="idle">Idle</button><button data-anim="move" class="on">Move</button><button data-anim="attack">Attack</button><button data-anim="special">Special</button></div>
+      <div class="bsounds"><span>Sounds</span><button data-snd="idle">Idle</button><button data-snd="alert">Alert</button><button data-snd="attack">Attack</button><button data-snd="special">Special</button><button data-snd="pain">Pain</button><button data-snd="step">Steps</button><button data-snd="death">Death</button></div>
+    </div>
+  </div>
+</section>
+
+<section id="m-settings" class="menu hidden">
+  <header><button class="back" data-back>‹ Back</button><h2>Settings</h2></header>
+  <div class="panel settings">
+    <label>Graphics quality <select id="s-quality"><option value="low">Low (fastest)</option><option value="medium">Medium</option><option value="high">High (sharpest)</option></select><em></em></label>
+    <label>Mouse sensitivity <input type="range" id="s-sens" min="0.2" max="3" step="0.05"><em></em></label>
+    <label>Field of view <input type="range" id="s-fov" min="65" max="100" step="1"><em></em></label>
+    <label>Master volume <input type="range" id="s-master" min="0" max="1" step="0.05"><em></em></label>
+    <label>Music volume <input type="range" id="s-music" min="0" max="1" step="0.05"><em></em></label>
+    <label>Effects volume <input type="range" id="s-sfx" min="0" max="1" step="0.05"><em></em></label>
+    <label>Rain &amp; weather volume <input type="range" id="s-weather" min="0" max="1.5" step="0.05"><em></em></label>
+    <label>Particle density <input type="range" id="s-particles" min="0.3" max="1.5" step="0.1"><em></em></label>
+    <label>Screen shake <input type="range" id="s-shake" min="0" max="1.5" step="0.1"><em></em></label>
+    <label>View bob <input type="range" id="s-bob" min="0" max="1.5" step="0.1"><em></em></label>
+    <label class="tog"><input type="checkbox" id="s-rawInput"> Raw mouse input (no OS acceleration, recommended)</label>
+    <label class="tog"><input type="checkbox" id="s-smooth"> Mouse smoothing</label>
+    <label class="tog"><input type="checkbox" id="s-bloom"> Bloom (glow) post-processing</label>
+    <label class="tog"><input type="checkbox" id="s-autoRes"> Automatic resolution (drops sharpness a little to keep the frame rate up)</label>
+    <label class="tog"><input type="checkbox" id="s-announcer"> Announcer voice</label>
+    <label class="tog"><input type="checkbox" id="s-hiveVoice"> Hive Mind taunts (the ominous voice lines and their subtitles)</label>
+    <label class="tog"><input type="checkbox" id="s-tips"> Gameplay tips (explains each machine, power-up and gadget the first time you meet it)</label>
+    <label class="tog"><input type="checkbox" id="s-minimap"> Minimap</label>
+    <label class="tog"><input type="checkbox" id="s-invert"> Invert mouse Y</label>
+    <label class="tog"><input type="checkbox" id="s-fps"> Show FPS</label>
+  </div>
+</section>
+
+<section id="m-controls" class="menu hidden">
+  <header><button class="back" data-back>‹ Back</button><h2>Field Manual</h2></header>
+  <div class="panel manual">
+    <div class="cols">
+      <div>
+        <h4>Controls</h4>
+        <dl>
+          <dt>W A S D</dt><dd>Move</dd><dt>Shift</dt><dd>Sprint</dd><dt>Space</dt><dd>Jump</dd><dt>C / Ctrl</dt><dd>Crouch</dd>
+          <dt>Left mouse</dt><dd>Fire</dd><dt>Right mouse</dt><dd>Aim down sights</dd><dt>R</dt><dd>Reload</dd>
+          <dt>1 / 2 · Q · Wheel</dt><dd>Switch weapon</dd><dt>V / F</dt><dd>Melee (combat knife)</dd><dt>G</dt><dd>Lethal (frag, sticky, cryo or turret)</dd>
+          <dt>E</dt><dd>Interact / buy (hold at vents to board them up)</dd><dt>T</dt><dd>Tactical (Lure Beacon or Decoy Hologram)</dd><dt>L</dt><dd>Flashlight (turns on by itself in the dark)</dd><dt>Space at a ledge</dt><dd>Climb onto crates, cover and containers</dd><dt>X (hold)</dt><dd>Raise Hive Shield; fire to bash</dd><dt>Esc</dt><dd>Pause</dd>
+        </dl>
+        <h4>Controller</h4>
+        <dl>
+          <dt>Left stick · L3</dt><dd>Move · sprint</dd><dt>Right stick</dt><dd>Look</dd><dt>RT · LT</dt><dd>Fire · aim</dd><dt>A · B</dt><dd>Jump · crouch</dd>
+          <dt>X</dt><dd>Reload, or interact when there is a prompt (hold at vents)</dd><dt>Y</dt><dd>Switch weapon</dd><dt>RB · LB</dt><dd>Lethal · tactical</dd><dt>R3</dt><dd>Knife</dd><dt>D-pad up · down</dt><dd>Flashlight · shield</dd><dt>Start</dt><dd>Pause</dd>
+        </dl>
+      </div>
+      <div>
+        <h4>Survival</h4>
+        <ul>
+          <li>Earn points for every hit and kill. Headshots and knife kills pay extra.</li>
+          <li>Spend points on <b>wall weapons</b>, <b>doors</b> to new zones, and <b>perk machines</b>.</li>
+          <li>Find the <b>generator</b> to restore power. Perks and the <b>Mutation Forge</b> need it.</li>
+          <li>The <b>Xeno Cache</b> (green light beam) gives a random weapon for 950. It moves when the hive claims it.</li>
+          <li>The <b>Mutation Forge</b> upgrades your weapon for 5000.</li>
+          <li>Every 5th round a <b>swarm</b> attacks. Every 8th, the <b>Hive Tyrant</b> comes.</li>
+          <li>Glowing drops: Max Ammo, Orbital Strike, Double Bounty, Insta-Kill, Fire Sale.</li>
+          <li>Mutated weapons carry a random <b>mutation effect</b>: Chain Shock, Blast Furnace, Cryo Nova, Gravity Well or Turned.</li>
+          <li>Each arena has <b>traps</b>, a <b>Mutagen Capsule</b> machine, 3 <b>shield parts</b> for the workbench, and boarded <b>vents</b>.</li>
+          <li>Some say the hive can be <b>severed</b>. Look for strange obelisks. Some say its eggs <b>sing</b>.</li>
+        </ul>
+      </div>
+    </div>
+    <h4>Everything you can use</h4>
+    <div id="tiplist" class="tiplist"></div>
+    <button id="resetTips">Show all tips again</button>
+  </div>
+</section>
+
+<section id="m-pause" class="menu hidden">
+  <div class="pausebox">
+    <h2>Paused</h2>
+    <div id="pauseinfo"></div>
+    <button class="primary" id="resumeBtn">Resume</button>
+    <button data-go="settings">Settings</button>
+    <button data-go="controls">Field Manual</button>
+    <button id="quitBtn">Abandon run</button>
+  </div>
+</section>
+
+<section id="m-over" class="menu hidden">
+  <div class="overbox">
+    <div class="over-t">OVERRUN</div>
+    <div class="over-r">You survived <b id="overRound">0</b> rounds</div>
+    <div id="overBest" class="hidden">★ NEW BEST ★</div>
+    <div id="overBoard"></div>
+    <div id="overStats"></div>
+    <div id="overChart"></div>
+    <div id="overAch"></div>
+    <div id="overXP"></div>
+    <div id="overHeat"></div>
+    <div class="overbtns"><button class="primary" id="retryBtn">Redeploy</button><button data-go="maps">Arena Select</button><button data-go="runs">Run History</button><button data-go="main">Main Menu</button></div>
+  </div>
+</section>
+
+<div id="letterbox" class="hidden"><div class="lb top"></div><div class="lb bot"></div><div class="lbt"><div class="l1" id="lbTitle"></div><div class="l2" id="lbSub"></div><div class="l3" id="lbSub2"></div></div><div class="lbskip">Press any key to skip</div></div>
+<div id="loading" class="hidden"><div class="ld-t">DEPLOYING</div><div class="ld-bar"><i></i></div><div class="ld-s" id="ldSub"></div></div>
+<div id="clicklock" class="hidden">Click to resume</div>
+<div id="err" class="hidden"></div>
+
+<script>
+  window.addEventListener('error', function (e) { var el = document.getElementById('err'); el.classList.remove('hidden'); el.textContent = 'Error: ' + e.message + ' (' + (e.filename || '').split('/').pop() + ':' + e.lineno + ')'; });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+<script src="js/savetransfer.js"></script>
+<script src="js/util.js"></script>
+<script src="js/data.js"></script>
+<script src="js/maps2.js"></script>
+<script src="js/mapdata.js"></script>
+<script src="js/maprooms.js"></script>
+<script src="js/zones.js"></script>
+<script src="js/mapedits.js"></script>
+<script src="js/edits.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/fx.js"></script>
+<script src="js/monsters.js"></script>
+<script src="js/weapons.js"></script>
+<script src="js/arsenal.js"></script>
+<script src="js/decor.js"></script>
+<script src="js/decor2.js"></script>
+<script src="js/city.js"></script>
+<script src="js/world.js"></script>
+<script src="js/enemies.js"></script>
+<script src="js/player.js"></script>
+<script src="js/systems.js"></script>
+<script src="js/structures.js"></script>
+<script src="js/progress.js"></script>
+<script src="js/classes.js"></script>
+<script src="js/uniques.js"></script>
+<script src="js/bosses.js"></script>
+<script src="js/mutations.js"></script>
+<script src="js/victory.js"></script>
+<script src="js/loadout.js"></script>
+<script src="js/achievements.js"></script>
+<script src="js/modes.js"></script>
+<script src="js/wonders.js"></script>
+<script src="js/secrets.js"></script>
+<script src="js/events.js"></script>
+<script src="js/companion.js"></script>
+<script src="js/traps.js"></script>
+<script src="js/hazards.js"></script>
+<script src="js/setdress.js"></script>
+<script src="js/mapstory.js"></script>
+<script src="js/kit.js"></script>
+<script src="js/logic.js"></script>
+<script src="js/daily.js"></script>
+<script src="js/editor.js"></script>
+<script src="js/telemetry.js"></script>
+<script src="js/director.js"></script>
+<script src="js/game.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/loadout-ui.js"></script>
+<script src="js/gamepad.js"></script>
+<script src="js/main.js"></script>
+<script>if (/[?&]editor\b/.test(location.search)) document.write('<link rel="stylesheet" href="css/xedit.css"><script src="js/xedit.js"><\/script>');</script>
+</body>
+</html>

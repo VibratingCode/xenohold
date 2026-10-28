@@ -1,0 +1,50 @@
+{
+  "v": 1,
+  "custom": {"name":"1011012","base":"frostfall","w":24,"h":20},
+  "grid": [
+    "##########a#############",
+    "#......................#",
+    "#.S..................S.#",
+    "#....................J.#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#...........P.M........#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#.S..................S.#",
+    "#......................#",
+    "##############b#########"
+  ],
+  "def": {
+    "lights": [
+      [11,3,14217471,1.2,24],
+      [3,11,14217471,1.2,24]
+    ],
+    "doors": {"0":{"cost":500,"name":"Door 0"},"1":{"cost":750,"name":"Door 1"},"2":{"cost":1000,"name":"Door 2"},"3":{"cost":1250,"name":"Door 3"},"4":{"cost":1500,"name":"Door 4"},"5":{"cost":1750,"name":"Door 5"},"6":{"cost":2000,"name":"Door 6"},"7":{"cost":2250,"name":"Door 7"},"8":{"cost":2500,"name":"Door 8"},"9":{"cost":2750,"name":"Door 9"}},
+    "buys": {"a":"carbine","b":"breacher","c":"pulse","d":"burst","e":"rail"},
+    "fog": {"color":6847118,"density":0.026},
+    "ambient": {"sky":10005696,"ground":3423818,"i":0.4},
+    "moon": {"color":14215423,"i":0.26},
+    "bloomT": 0.96
+  },
+  "dress": {
+    "floors": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "entities": [
+
+    ]
+  },
+  "place": {
+    "eye1": {"x":24.7,"y":2.6184825531604305,"z":-22.44,"nx":0,"nz":1},
+    "part2": {"x":13,"z":5.5},
+    "fan.lever": {"x":-11.5,"z":-17.5},
+    "altar": {"x":13,"z":8.25}
+  }
+}

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Creature Viewer</title>
+<style>body{margin:0;background:#111;overflow:hidden;color:#ccc;font:14px monospace}#ui{position:fixed;top:8px;left:8px}</style></head>
+<body><div id="ui"></div>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="../js/util.js"></script><script src="../js/fx.js"></script><script src="../js/monsters.js"></script>
+<script>
+const r=new THREE.WebGLRenderer({antialias:true});r.setSize(innerWidth,innerHeight);document.body.appendChild(r.domElement);
+const s=new THREE.Scene();s.background=new THREE.Color(0x202428);
+const cam=new THREE.PerspectiveCamera(45,innerWidth/innerHeight,.1,200);
+s.add(new THREE.HemisphereLight(0x9ab0c8,0x302020,1));const dl=new THREE.DirectionalLight(0xffffff,.8);dl.position.set(5,10,8);s.add(dl);
+const fl=new THREE.Mesh(new THREE.PlaneGeometry(80,80),new THREE.MeshStandardMaterial({color:0x303438}));fl.rotation.x=-Math.PI/2;s.add(fl);
+const q=new URLSearchParams(location.search);const only=q.get('m');const mode=q.get('a')||'move';
+const types=only?[only]:['skitterling','burster','lancer','shrieker','broodling','burrower','broodmother','behemoth','tyrant'];
+const xs=[0,2.2,4.6,7.8,10,12.4,16,21.5,28.5];
+const inst=types.map((t,i)=>{const m=XH.monsters.create(t);m.root.position.set(only?0:xs[i],t==='shrieker'?1.6:0,0);s.add(m.root);return {t,m,st:{t:0,phase:0,move:mode==='move'?1:0,atk:-1,cast:-1,seed:1,spit:-1}}});
+const ang=parseFloat(q.get('ang')||'0.6');
+if(only){const sz=({tyrant:12,behemoth:9,broodmother:7,burrower:6,lancer:5.5,shrieker:5.5}[only]||3.5)*parseFloat(q.get("z")||"1");cam.position.set(Math.sin(ang)*sz,sz*0.45,Math.cos(ang)*sz);cam.lookAt(0,sz*0.18,0);}
+else{cam.position.set(14,7,22);cam.lookAt(14,1.2,0);}
+let T=0;function loop(){requestAnimationFrame(loop);const dt=1/60;T+=dt;for(const o of inst){o.st.t=T;o.st.phase+=dt*8*(o.t==='behemoth'||o.t==='tyrant'?0.4:1);if(mode==='atk'){o.st.atk=(T%1.5)/1.5;}if(mode==='cast'){o.st.cast=(T%2)/2;o.st.act='slam';o.st.actT=(T%2)/2;}o.st.rollSpeed=4;XH.monsters.animate(o.t,o.m.rig,o.st,dt);}r.render(s,cam);}
+loop();
+</script></body></html>
